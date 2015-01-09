@@ -54,6 +54,19 @@ h4 {
   padding-bottom: 30px;
 }
 
+h5 {
+  font-weight: 400;
+  font-size: 16px;
+}
+
+#warning {
+  color: #cd3700;
+}
+
+#finalMsg {
+  padding-top: 30px;
+}
+
 input[type="submit"], .btn {
   text-transform: uppercase;
   outline: none;
