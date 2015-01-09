@@ -69,7 +69,7 @@ function hotterColder (prevDiff, diff) {
 }
 
 function highLow () {
-  return game.guess > game.correctNum ? "Guess Lower" : "Guess Higher";
+  return this.guess > game.correctNum ? "Guess Lower" : "Guess Higher";
 }
 
 function correct() {
