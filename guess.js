@@ -50,11 +50,10 @@ Game.prototype.numberCompare = function () {
       correct();
     } else if (game.stack.length > 1) {
       var prevDiff = Math.abs(game.stack[game.stack.length-2]-game.correctNum);
-    //  debugger;
-      msg = $("<h5 class='msg'>"+hotterColder(prevDiff, diff)+hotCold(diff)+highLow()+"</h5>");
+      msg = $("<h5 class='msg'>"+hotterColder(prevDiff, diff)+hotCold(diff)+highLow(this.guess)+"</h5>");
       $(".message").append(msg);
     } else {
-      msg = $("<h5 class='msg'>"+hotCold(diff)+highLow()+"</h5>");
+      msg = $("<h5 class='msg'>"+hotCold(diff)+highLow(this.guess)+"</h5>");
       $(".message").append(msg);
     }
   }
@@ -68,8 +67,8 @@ function hotterColder (prevDiff, diff) {
   return prevDiff > diff ? "Getting hotter: " : "Getting colder: ";
 }
 
-function highLow () {
-  return this.guess > game.correctNum ? "Guess Lower" : "Guess Higher";
+function highLow (guess) {
+  return guess > game.correctNum ? "Guess Lower" : "Guess Higher";
 }
 
 function correct() {
