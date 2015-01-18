@@ -1,7 +1,18 @@
-// remaining questions: this vs 'game' global variable, stack was not reset when resetting game
 //.replaceWith() not working vs .text()
 
-var game;
+// when the new keyword is used
+// it sets "this" = {}
+// if nothing else is returned, it returns "this"(which is the populated object);
+// function constructor(name){
+//   // this = {}
+//   this.name = name;
+//   this.sayHey = function(){
+//     return this.name;
+//   }
+//   // return this
+// }
+
+
 function Game () {
   this.guessCount = 5;
   this.correctNum = Math.floor((Math.random() * 100) + 1);
@@ -10,10 +21,11 @@ function Game () {
   $('#numGuesses').text(this.guessCount);
 }
 
+// game.numberCheck();
 
 Game.prototype.numberCheck = function () {
   var that = this;
-  $('input:submit').on('click', function (event) {
+  $('input:submit').off().on('click', function (event) {
     that.guess=$('input:text').val();
     $("input:text").val("");
     event.preventDefault();
@@ -26,34 +38,37 @@ Game.prototype.numberCheck = function () {
       that.numberCompare();
     }
   })
+  //.bind(this))
 }
 
 Game.prototype.numberCompare = function () {
+  //debugger;
   var msg;
   if (this.guess < 1 || this.guess > 100) {
     $('.message').prepend($('<h5 id="warning">Please input number between 1 and 100</h5>'));
-  } else if (game.stack.indexOf(this.guess) > -1) {
+  } else if (this.stack.indexOf(this.guess) > -1) {
     $('.message').prepend($('<h5 id="warning">Already guessed. Please input new number</h5>'));
-  } else if (game.guessCount === 0) {
+  } else if (this.guessCount === 0) {
     $(".message").prepend('<h5 id="warning">You have used all your guesses. Sorry!</h5>');
   } else if ($('#finalMsg').length) {
     $(".message").prepend('<h5 id="warning">You have already won. Play a new game!</h5>');
   } else {
     $('#warning').remove();
     $('.hintMsg').remove();
-    game.guessCount--;
-    $('#numGuesses').text(game.guessCount);
-    game.stack.push(this.guess);
+    this.guessCount--;
+    $('#numGuesses').text(this.guessCount);
+    this.stack.push(this.guess);
 
-    var diff = Math.abs(this.guess-game.correctNum);
+    var diff = Math.abs(this.guess-this.correctNum);
     if (diff===0) {
       correct();
-    } else if (game.stack.length > 1) {
-      var prevDiff = Math.abs(game.stack[game.stack.length-2]-game.correctNum);
-      msg = $("<h5 class='msg'>"+hotterColder(prevDiff, diff)+hotCold(diff)+highLow(this.guess)+"</h5>");
+    } else if (this.stack.length > 1) {
+      var prevDiff = Math.abs(this.stack[this.stack.length-2]-this.correctNum);
+    //  debugger;
+      msg = $("<h5 class='msg'>"+hotterColder(prevDiff, diff)+hotCold(diff)+this.highLow()+"</h5>");
       $(".message").append(msg);
     } else {
-      msg = $("<h5 class='msg'>"+hotCold(diff)+highLow(this.guess)+"</h5>");
+      msg = $("<h5 class='msg'>"+hotCold(diff)+this.highLow()+"</h5>");
       $(".message").append(msg);
     }
   }
@@ -67,8 +82,8 @@ function hotterColder (prevDiff, diff) {
   return prevDiff > diff ? "Getting hotter: " : "Getting colder: ";
 }
 
-function highLow (guess) {
-  return guess > game.correctNum ? "Guess Lower" : "Guess Higher";
+Game.prototype.highLow = function () {
+  return this.guess > this.correctNum ? "Guess Lower" : "Guess Higher";
 }
 
 function correct() {
@@ -79,28 +94,35 @@ function correct() {
  }
 
 Game.prototype.reset = function () {
-  $('.reset').on ('click', function (event) {
-    event.preventDefault();
-    $('.main-bg').css('background-color', '');
-    $('.hintMsg').remove();
-    $('.msg').remove();
-    $('#warning').remove();
-    $('#finalMsg').remove();
-    game = new Game();
-  })
+  event.preventDefault();
+  $('.main-bg').css('background-color', '');
+  $('.hintMsg').remove();
+  $('.msg').remove();
+  $('#warning').remove();
+  $('#finalMsg').remove();
+  return new Game();
 }
 
-Game.prototype.hint = function () {
+// Game.prototype.hint = function () {
+//   var that=this;
+//   $('.hint').on('click', function (event) {
+//     event.preventDefault();
+//     $('.hintMsg').remove();
+//     $('.message').prepend($('<h4 class="hintMsg">The answer is '+that.correctNum+'</h4>'));
+//   })
+//  //.bind(this))
+// }
+
+$(document).ready(function () {
+  var game = new Game();
+  $('.reset').on ('click', function (event) {
+    game = game.reset();
+    game.numberCheck();
+  })
   $('.hint').on('click', function (event) {
     event.preventDefault();
     $('.hintMsg').remove();
     $('.message').prepend($('<h4 class="hintMsg">The answer is '+game.correctNum+'</h4>'));
   })
-}
-
-$(document).ready(function () {
-  game = new Game();
   game.numberCheck();
-  game.reset();
-  game.hint();
 })
